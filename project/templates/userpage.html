@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judex AI - Court Dashboard with Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#1e293b', 900: '#0f172a' },
+                        blue: { 600: '#2563eb', 500: '#3b82f6' },
+                        emerald: { 500: '#10b981' },
+                        rose: { 500: '#f43f5e' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for Chat */
+        .chat-scroll::-webkit-scrollbar { width: 6px; }
+        .chat-scroll::-webkit-scrollbar-track { background: #1e293b; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
+</head>
+<body class="bg-slate-900 text-gray-200 font-sans antialiased h-screen flex overflow-hidden">
+
+    <aside class="w-64 bg-slate-850 border-r border-slate-700 flex flex-col justify-between hidden md:flex">
+        <div>
+            <div class="h-16 flex items-center px-6 border-b border-slate-700">
+                <i class="fa-solid fa-scale-balanced text-blue-500 text-2xl mr-3"></i>
+                <span class="text-lg font-bold tracking-wide">JUDEX<span class="text-blue-500">.AI</span></span>
+            </div>
+            <nav class="mt-6 px-4 space-y-2">
+                <a href="#" class="flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg transition-colors shadow-lg shadow-blue-900/50">
+                    <i class="fa-solid fa-gavel w-6"></i>
+                    <span class="font-medium">Active Judgment</span>
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 hover:bg-slate-700 rounded-lg transition-colors text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-folder-open w-6"></i>
+                    <span>Case Repository</span>
+                </a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-slate-700">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center text-white">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Hon. Justice</p>
+                    <p class="text-xs text-gray-500">Session ID: #892</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <header class="h-16 bg-slate-850 border-b border-slate-700 flex items-center justify-between px-8">
+            <div class="flex items-center gap-4">
+                <span class="px-3 py-1 bg-slate-700/50 border border-slate-600 rounded text-xs text-blue-400 font-mono">CASE #2024-CR-892</span>
+                <h1 class="text-xl font-semibold text-white">State vs. Doe <span class="text-gray-500 text-sm font-normal ml-2">| Evidence Review Phase</span></h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 text-xs text-gray-400 mr-4">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    AI Online
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-hidden p-6 grid grid-cols-12 gap-6">
+
+            <div class="col-span-12 lg:col-span-7 flex flex-col gap-6 overflow-y-auto pr-2">
+                
+                <div class="bg-slate-850 rounded-xl border border-slate-700 p-1 shadow-lg flex-1 min-h-[400px] flex flex-col">
+                    <div class="flex justify-between items-center p-3 border-b border-slate-700/50">
+                        <h2 class="font-semibold text-sm text-gray-300"><i class="fa-solid fa-eye text-blue-500 mr-2"></i>Visual Evidence #04A</h2>
+                        <div class="flex gap-2">
+                            <button class="text-xs bg-blue-600 text-white px-2 py-1 rounded">AI Overlay</button>
+                            <button class="text-xs hover:bg-slate-700 text-gray-400 px-2 py-1 rounded">Raw</button>
+                        </div>
+                    </div>
+                    
+                    <div class="relative flex-1 bg-black rounded-lg m-1 overflow-hidden group">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop" class="opacity-70 object-cover w-full h-full">
+                        
+                        <div class="absolute top-[20%] left-[25%] w-[15%] h-[20%] border-2 border-rose-500 bg-rose-500/10 shadow-[0_0_15px_rgba(244,63,94,0.5)]">
+                            <div class="absolute -top-6 left-0 bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-t">
+                                Weapon (98%)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 h-32">
+                    <div class="bg-slate-850 p-4 rounded-xl border border-slate-700 flex flex-col justify-center">
+                        <span class="text-gray-400 text-xs uppercase mb-1">Deepfake Analysis</span>
+                        <div class="flex items-end gap-2">
+                            <span class="text-2xl font-bold text-emerald-400">Authentic</span>
+                            <span class="text-sm text-gray-500 mb-1">99.2% Score</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-1.5 rounded-full mt-3">
+                            <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 99%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-850 p-4 rounded-xl border border-slate-700 flex flex-col justify-center">
+                        <span class="text-gray-400 text-xs uppercase mb-1">Identified Subject</span>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <p class="font-bold text-white">John Doe</p>
+                                <p class="text-xs text-blue-400">92% Face Match</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-12 lg:col-span-5 flex flex-col bg-slate-850 rounded-xl border border-slate-700 shadow-xl overflow-hidden">
+                
+                <div class="p-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-semibold text-white"><i class="fa-solid fa-robot text-blue-500 mr-2"></i>Judex Assistant</h3>
+                        <p class="text-xs text-gray-400">Context: Analyzing Evidence #04A</p>
+                    </div>
+                    <button class="text-gray-500 hover:text-white"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+
+                <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 chat-scroll bg-slate-900/50">
+                    
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-gavel text-xs text-white"></i>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%]">
+                            <p class="text-sm text-gray-300">I have analyzed the submitted image. I detected a firearm in the upper quadrant (Confidence: 98%). Would you like me to cross-reference this with the registered weapon database?</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 flex-row-reverse">
+                        <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-user text-xs"></i>
+                        </div>
+                        <div class="bg-blue-900/30 p-3 rounded-2xl rounded-tr-none border border-blue-800/50 max-w-[85%]">
+                            <p class="text-sm text-blue-100">Yes, check if the serial number is visible.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-gavel text-xs text-white"></i>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%]">
+                            <p class="text-sm text-gray-300">Negative. The resolution is insufficient to read the serial number directly. However, I have enhanced the frame. <br><br> <span class="text-emerald-400 cursor-pointer hover:underline"><i class="fa-solid fa-image mr-1"></i> View Enhanced Frame</span></p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="p-4 bg-slate-850 border-t border-slate-700">
+                    <form id="chat-form" class="relative">
+                        <input type="text" id="user-input" 
+                            class="w-full bg-slate-900 border border-slate-700 text-gray-200 text-sm rounded-lg pl-4 pr-12 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-500" 
+                            placeholder="Ask about the evidence or relevant laws..." autocomplete="off">
+                        <button type="submit" class="absolute right-2 top-2 p-1.5 text-blue-500 hover:text-blue-400 transition-colors">
+                            <i class="fa-solid fa-paper-plane text-lg"></i>
+                        </button>
+                    </form>
+                    <div class="flex justify-center mt-2 gap-2">
+                        <button class="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded-full text-gray-400 border border-slate-700">Find Precedents</button>
+                        <button class="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded-full text-gray-400 border border-slate-700">Draft Ruling</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // 1. Add User Message
+            appendMessage('user', text);
+            userInput.value = '';
+
+            // 2. Simulate AI Typing Delay
+            setTimeout(() => {
+                // Simple logic for demo purposes
+                let response = "I'm analyzing that query against the current case files...";
+                if(text.toLowerCase().includes("law") || text.toLowerCase().includes("statute")) {
+                    response = "Based on Penal Code 187, this evidence supports the prosecution's claim of intent.";
+                } else if (text.toLowerCase().includes("zoom") || text.toLowerCase().includes("enhance")) {
+                    response = "Applying 4x super-resolution upscaling to the requested region. One moment.";
+                }
+                
+                appendMessage('ai', response);
+            }, 1000);
+        });
+
+        function appendMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = role === 'user' ? "flex items-start gap-3 flex-row-reverse" : "flex items-start gap-3";
+            
+            const iconColor = role === 'user' ? "bg-slate-600" : "bg-blue-600";
+            const iconClass = role === 'user' ? "fa-user" : "fa-gavel";
+            const bubbleClass = role === 'user' ? "bg-blue-900/30 border-blue-800/50 text-blue-100 rounded-tr-none" : "bg-slate-800 border-slate-700 text-gray-300 rounded-tl-none";
+
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid ${iconClass} text-xs text-white"></i>
+                </div>
+                <div class="${bubbleClass} p-3 rounded-2xl border max-w-[85%] animate-[fadeIn_0.3s_ease-out]">
+                    <p class="text-sm">${text}</p>
+                </div>
+            `;
+            
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
