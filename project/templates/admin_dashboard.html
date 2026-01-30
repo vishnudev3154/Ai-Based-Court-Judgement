@@ -3,195 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LexAI | Judiciary Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>AI Court | Modern Admin</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .glass-panel {
-            background: rgba(255, 255, 255, 1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border: 1px solid #e2e8f0;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --sidebar-dark: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #334155;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            background: var(--sidebar-dark);
+            color: white;
+            padding: 1.5rem;
+            z-index: 1000;
+        }
+
+        .sidebar .nav-link {
+            color: #94a3b8;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        /* Modern Cards */
+        .stat-card {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-shape {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Glass Table */
+        .custom-table-card {
+            background: white;
+            border-radius: 16px;
+            border: none;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: #f8fafc;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            padding: 1rem;
+            border: none;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: #f1f5f9;
+        }
+
+        /* Action Buttons */
+        .btn-modern {
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-retrain { background: #f59e0b; color: white; }
+        .btn-retrain:hover { background: #d97706; }
+
+        @media (max-width: 992px) {
+            .sidebar { width: 80px; padding: 1rem 0.5rem; }
+            .sidebar span { display: none; }
+            .main-content { margin-left: 80px; }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body>
 
-    <div class="flex h-screen overflow-hidden">
-        
-        <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-20">
-            <div class="h-16 flex items-center px-6 border-b border-slate-700">
-                <i class="fas fa-scale-balanced text-sky-400 text-xl mr-3"></i>
-                <span class="text-lg font-bold tracking-wide">Lex<span class="text-sky-400">AI</span> Court</span>
+<aside class="sidebar d-flex flex-column">
+    <div class="mb-5 px-2">
+        <h4 class="fw-bold"><i class="fas fa-balance-scale me-2 text-info"></i><span>AI Court</span></h4>
+    </div>
+    
+    <nav class="nav flex-column flex-grow-1">
+        <a href="#" class="nav-link active"><i class="fas fa-th-large me-2"></i><span>Dashboard</span></a>
+<a href="{% url 'manage_users' %}" class="nav-link">
+    <i class="fas fa-user-shield me-2"></i><span>Users</span>
+</a>
+        <a href="#" class="nav-link"><i class="fas fa-folder-open me-2"></i><span>Case Data</span></a>
+        <a href="#" class="nav-link"><i class="fas fa-microchip me-2"></i><span>AI Engine</span></a>
+        <a href="#" class="nav-link"><i class="fas fa-book me-2"></i><span>IPC Database</span></a>
+    </nav>
+
+    <div class="mt-auto">
+        <a href="{% url 'logout' %}" class="btn btn-outline-light w-100 btn-modern"><i class="fas fa-sign-out-alt me-2"></i><span>Logout</span></a>
+    </div>
+</aside>
+
+<main class="main-content">
+    <header class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold">Welcome, Admin</h2>
+            <p class="text-muted">System Status: <span class="text-success fw-bold">Operational</span></p>
+        </div>
+        <div class="d-flex gap-3">
+            <button class="btn btn-white bg-white shadow-sm btn-modern text-dark border"><i class="fas fa-bell"></i></button>
+            <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="rounded-circle shadow-sm" width="45" alt="Profile">
+        </div>
+    </header>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="icon-shape bg-primary"><i class="fas fa-users"></i></div>
+                <h6 class="text-muted">Public Users</h6>
+                <h3 class="fw-bold">{{ total_users }}</h3>
             </div>
-
-            <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="#" class="flex items-center px-4 py-3 bg-sky-600 rounded-lg text-white transition">
-                    <i class="fas fa-chart-pie w-6"></i>
-                    <span class="font-medium">Dashboard</span>
-                </a>
-                <a href="#" class="flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition">
-                    <i class="fas fa-gavel w-6"></i>
-                    <span>Case Review</span>
-                </a>
-                <a href="#" class="flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition">
-                    <i class="fas fa-robot w-6"></i>
-                    <span>AI Models</span>
-                </a>
-                <a href="#" class="flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition">
-                    <i class="fas fa-users w-6"></i>
-                    <span>Litigants</span>
-                </a>
-                <a href="#" class="flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition">
-                    <i class="fas fa-file-contract w-6"></i>
-                    <span>Reports</span>
-                </a>
-            </nav>
-
-            <div class="p-4 border-t border-slate-800">
-                <a href="/logout" class="flex items-center px-4 py-2 text-slate-400 hover:text-white transition">
-                    <i class="fas fa-sign-out-alt w-6"></i>
-                    <span>Logout</span>
-                </a>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="icon-shape bg-info"><i class="fas fa-file-invoice"></i></div>
+                <h6 class="text-muted">Case Submissions</h6>
+                <h3 class="fw-bold">{{ total_cases }}</h3>
             </div>
-        </aside>
-
-        <div class="flex-1 flex flex-col h-screen overflow-y-auto">
-            
-            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
-                <h1 class="text-xl font-semibold text-slate-800">Judicial Oversight Dashboard</h1>
-                
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full border border-slate-200">
-                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span class="text-xs font-medium text-slate-600">AI System Online</span>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold border border-slate-300">
-                        {{ request.user.username|slice:":1"|upper }}
-                    </div>
-                </div>
-            </header>
-
-            <main class="p-8">
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="glass-panel p-6 rounded-xl border-l-4 border-sky-500">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-xs font-semibold text-slate-500 uppercase">Total Cases</p>
-                                <h3 class="text-2xl font-bold text-slate-800 mt-1">{{ stats.total_cases }}</h3>
-                            </div>
-                            <div class="p-2 bg-sky-50 rounded-lg text-sky-600">
-                                <i class="fas fa-folder-open"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-panel p-6 rounded-xl border-l-4 border-amber-500">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-xs font-semibold text-slate-500 uppercase">Pending Review</p>
-                                <h3 class="text-2xl font-bold text-slate-800 mt-1">{{ stats.pending_review }}</h3>
-                            </div>
-                            <div class="p-2 bg-amber-50 rounded-lg text-amber-600">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-panel p-6 rounded-xl border-l-4 border-emerald-500">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-xs font-semibold text-slate-500 uppercase">AI Confidence</p>
-                                <h3 class="text-2xl font-bold text-slate-800 mt-1">{{ stats.ai_accuracy }}</h3>
-                            </div>
-                            <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
-                                <i class="fas fa-brain"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                     <div class="glass-panel p-6 rounded-xl border-l-4 border-purple-500">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-xs font-semibold text-slate-500 uppercase">Avg. Resolution</p>
-                                <h3 class="text-2xl font-bold text-slate-800 mt-1">{{ stats.avg_resolution_time }}</h3>
-                            </div>
-                            <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
-                                <i class="fas fa-bolt"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-panel rounded-xl overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-                        <h3 class="font-bold text-slate-700">Recent AI Judgments</h3>
-                        <button class="text-sm text-sky-600 hover:text-sky-700 font-medium">View All Cases</button>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 text-xs uppercase text-slate-500 font-semibold border-b border-slate-200">
-                                    <th class="px-6 py-4">Case Ref</th>
-                                    <th class="px-6 py-4">Type</th>
-                                    <th class="px-6 py-4">AI Prediction</th>
-                                    <th class="px-6 py-4">Confidence</th>
-                                    <th class="px-6 py-4">Status</th>
-                                    <th class="px-6 py-4">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-sm">
-                                {% for case in recent_cases %}
-                                <tr class="hover:bg-slate-50 transition-colors">
-                                    <td class="px-6 py-4 font-medium text-slate-900">
-                                        {{ case.id }}<br>
-                                        <span class="text-xs text-slate-400 font-normal">{{ case.date }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-slate-600">{{ case.type }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="font-semibold text-slate-700">{{ case.ai_prediction }}</span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="w-24 bg-slate-200 rounded-full h-2 mb-1">
-                                            <div class="bg-{% if case.confidence > 80 %}emerald{% elif case.confidence > 60 %}amber{% else %}red{% endif %}-500 h-2 rounded-full" style="width: {{ case.confidence }}%"></div>
-                                        </div>
-                                        <span class="text-xs text-slate-500">{{ case.confidence }}% Match</span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            {% if case.status == 'Auto-Approved' %} bg-green-100 text-green-800
-                                            {% elif case.status == 'Human Review' %} bg-yellow-100 text-yellow-800
-                                            {% elif case.status == 'Flagged Risk' %} bg-red-100 text-red-800
-                                            {% else %} bg-slate-100 text-slate-800 {% endif %}">
-                                            {{ case.status }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <button class="text-slate-400 hover:text-sky-600 transition mr-3" title="View Details">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-slate-400 hover:text-emerald-600 transition" title="Approve Verdict">
-                                            <i class="fas fa-check-circle"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="6" class="px-6 py-8 text-center text-slate-500">No cases found in the database.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </main>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="icon-shape bg-success"><i class="fas fa-brain"></i></div>
+                <h6 class="text-muted">Predictions</h6>
+                <h3 class="fw-bold">{{ total_predictions }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="icon-shape bg-warning"><i class="fas fa-star"></i></div>
+                <h6 class="text-muted">Model Accuracy</h6>
+                <h3 class="fw-bold">{{ model_accuracy }}</h3>
+            </div>
         </div>
     </div>
 
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="custom-table-card shadow-sm">
+                <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold">Recent Case Submissions</h5>
+                    <button class="btn btn-link btn-sm text-decoration-none">View All</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Anonymized Summary</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for case in recent_cases %}
+                            <tr>
+                                <td class="text-muted small">{{ case.created_at|date:"d M, Y" }}</td>
+                                <td class="fw-semibold text-dark">{{ case.case_text|truncatechars:50 }}</td>
+                                <td><span class="badge bg-light text-success border border-success px-3">Reviewed</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center py-4 text-muted">No recent data found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="stat-card border-0 mb-4 bg-dark text-white shadow-lg">
+                <h5 class="fw-bold mb-3"><i class="fas fa-robot text-info me-2"></i>AI Controller</h5>
+                <p class="small text-light opacity-75">Upload new datasets (CSV) to retrain the advisory model.</p>
+                <form action="#" method="POST" enctype="multipart/form-data">
+                    <input type="file" class="form-control form-control-sm bg-transparent border-secondary text-white mb-3">
+                    <button class="btn btn-info w-100 btn-modern py-2">Retrain AI Engine</button>
+                </form>
+            </div>
+
+            <div class="stat-card">
+                <h5 class="fw-bold mb-3">Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary text-start btn-modern"><i class="fas fa-plus me-2"></i>Add IPC Section</button>
+                    <button class="btn btn-outline-secondary text-start btn-modern"><i class="fas fa-edit me-2"></i>Update FAQ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
