@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judex AI - History</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { surface: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' } } } }
+        }
+    </script>
+    <style>
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .prose p { margin-bottom: 0.5em; }
+        .active-chat { background: rgba(37, 99, 235, 0.2); border-left: 3px solid #3b82f6; }
+    </style>
+</head>
+<body class="bg-surface-950 text-slate-300 font-sans h-screen flex overflow-hidden">
+
+    <aside class="w-72 glass-panel flex flex-col z-20 hidden md:flex">
+        <div class="p-6 h-20 flex items-center justify-between">
+            <span class="text-xl font-bold text-white">JUDEX<span class="text-blue-500">.AI</span></span>
+            <button onclick="startNewChat()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-plus mr-1"></i> New
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto custom-scroll px-3 space-y-1" id="history-list">
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2 mt-2">History</div>
+            
+            {% for session in sessions %}
+            <div onclick="loadSession({{ session.id }}, this)" 
+                 class="session-item group flex items-center px-3 py-3 text-sm text-slate-400 hover:bg-white/5 hover:text-white rounded-lg cursor-pointer transition-all">
+                <i class="fa-regular fa-message w-6 opacity-50 group-hover:opacity-100"></i>
+                <span class="truncate">{{ session.title }}</span>
+            </div>
+            {% empty %}
+            <div class="text-center text-slate-600 text-sm py-4 italic">No history yet</div>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full relative z-10">
+        <div class="flex-1 overflow-hidden p-4">
+            <div class="w-full h-full flex flex-col glass-panel rounded-2xl shadow-2xl relative">
+                
+                <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
+                    <div id="welcome-msg" class="flex items-start gap-4 mx-auto max-w-4xl w-full">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-robot text-white"></i>
+                        </div>
+                        <div class="bg-surface-800/80 border border-white/5 p-5 rounded-2xl text-slate-200 shadow-md">
+                            <p>Hello! Start a new chat or select a previous conversation from the sidebar.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-surface-900/80 backdrop-blur-md border-t border-white/5">
+                    <form id="chat-form" class="relative max-w-4xl mx-auto">
+                        <input type="text" id="user-input" class="w-full bg-surface-950/50 border border-white/10 text-slate-200 rounded-xl pl-6 pr-14 py-4 focus:outline-none focus:border-blue-500/50 transition-all" placeholder="Type a message..." autocomplete="off">
+                        <button type="submit" class="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white rounded-lg">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentSessionId = null; // Tracks the current active chat
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+
+        // 1. Send Message Logic
+        document.getElementById('chat-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Clear welcome message if it's the first message
+            const welcome = document.getElementById('welcome-msg');
+            if (welcome) welcome.style.display = 'none';
+
+            appendMessage('user', text);
+            userInput.value = '';
+            const loadingId = appendLoading();
+
+            try {
+                const response = await fetch('/chat/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ 
+                        message: text,
+                        session_id: currentSessionId // Send ID if we are in an existing chat
+                    })
+                });
+
+                const data = await response.json();
+                removeLoading(loadingId);
+
+                if (response.ok) {
+                    appendMessage('ai', data.reply);
+                    
+                    // If this was a new chat, the server created an ID. Save it.
+                    if (!currentSessionId && data.session_id) {
+                        currentSessionId = data.session_id;
+                        // Refresh page to show new chat in sidebar (Simple way)
+                        // Ideally, you'd just append to the sidebar via JS
+                         setTimeout(() => location.reload(), 2000); 
+                    }
+                } else {
+                    appendMessage('error', data.error);
+                }
+            } catch (error) {
+                removeLoading(loadingId);
+                appendMessage('error', "Connection failed");
+            }
+        });
+
+        // 2. Load Old Session (Sidebar Click)
+        async function loadSession(sessionId, element) {
+            currentSessionId = sessionId;
+            
+            // Highlight active sidebar item
+            document.querySelectorAll('.session-item').forEach(el => el.classList.remove('active-chat', 'bg-blue-900/20'));
+            if(element) element.classList.add('active-chat', 'bg-blue-900/20');
+
+            // Clear Chat & Show Loading
+            chatContainer.innerHTML = ''; 
+            const loadingId = appendLoading();
+
+            try {
+                const response = await fetch(`/chat/history/${sessionId}/`);
+                const data = await response.json();
+                removeLoading(loadingId);
+
+                data.messages.forEach(msg => {
+                    appendMessage(msg.role, msg.text);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // 3. Start New Chat
+        function startNewChat() {
+            currentSessionId = null;
+            chatContainer.innerHTML = `
+                <div id="welcome-msg" class="flex items-start gap-4 mx-auto max-w-4xl w-full animate-fade-in-up">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-robot text-white"></i></div>
+                    <div class="bg-surface-800/80 border border-white/5 p-5 rounded-2xl text-slate-200 shadow-md"><p>New conversation started. How can I help?</p></div>
+                </div>`;
+            document.querySelectorAll('.session-item').forEach(el => el.classList.remove('active-chat'));
+        }
+
+        // --- UI Helpers ---
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function appendLoading() {
+            const id = 'loading-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = "flex items-start gap-4 mx-auto max-w-4xl w-full animate-pulse";
+            div.innerHTML = `<div class="w-10 h-10 rounded-xl bg-surface-800 flex items-center justify-center"><i class="fa-solid fa-ellipsis text-blue-400"></i></div>`;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return id;
+        }
+
+        function removeLoading(id) { const el = document.getElementById(id); if(el) el.remove(); }
+
+        function appendMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = "flex items-start gap-4 mx-auto max-w-4xl w-full mb-6 animate-fade-in-up";
+            
+            if (role === 'user') {
+                div.className += " flex-row-reverse";
+                div.innerHTML = `
+                    <div class="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-user text-slate-300"></i></div>
+                    <div class="bg-blue-600 text-white p-4 rounded-2xl rounded-tr-none max-w-[85%] shadow-lg">${text}</div>`;
+            } else {
+                div.innerHTML = `
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg"><i class="fa-solid fa-robot text-white"></i></div>
+                    <div class="bg-surface-800/80 border border-white/5 p-5 rounded-2xl rounded-tl-none text-slate-200 max-w-[85%] prose">${marked.parse(text)}</div>`;
+            }
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>

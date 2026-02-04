@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'app',
 ]
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -118,3 +119,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# ✅ Load environment variables FIRST
+load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parent.parent

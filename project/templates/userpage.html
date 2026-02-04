@@ -3,236 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Judex AI - Court Dashboard with Chat</title>
+    <title>Dashboard | Judex AI</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        slate: { 850: '#1e293b', 900: '#0f172a' },
-                        blue: { 600: '#2563eb', 500: '#3b82f6' },
-                        emerald: { 500: '#10b981' },
-                        rose: { 500: '#f43f5e' }
+                        surface: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' },
+                        glass: { border: 'rgba(255, 255, 255, 0.08)' }
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Custom Scrollbar for Chat */
-        .chat-scroll::-webkit-scrollbar { width: 6px; }
-        .chat-scroll::-webkit-scrollbar-track { background: #1e293b; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.4));
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.6));
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-gray-200 font-sans antialiased h-screen flex overflow-hidden">
+<body class="bg-surface-950 text-slate-300 font-sans h-screen flex overflow-hidden selection:bg-blue-500/30">
 
-    <aside class="w-64 bg-slate-850 border-r border-slate-700 flex flex-col justify-between hidden md:flex">
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-emerald-900/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <aside class="w-64 glass-panel border-r-0 border-r-glass-border hidden md:flex flex-col justify-between z-20">
         <div>
-            <div class="h-16 flex items-center px-6 border-b border-slate-700">
-                <i class="fa-solid fa-scale-balanced text-blue-500 text-2xl mr-3"></i>
-                <span class="text-lg font-bold tracking-wide">JUDEX<span class="text-blue-500">.AI</span></span>
+            <div class="h-20 flex items-center px-8">
+                <span class="text-xl font-bold tracking-tight text-white">JUDEX<span class="text-blue-500">.AI</span></span>
             </div>
-            <nav class="mt-6 px-4 space-y-2">
-                <a href="#" class="flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg transition-colors shadow-lg shadow-blue-900/50">
-                    <i class="fa-solid fa-gavel w-6"></i>
-                    <span class="font-medium">Active Judgment</span>
+
+            <nav class="mt-8 px-4 space-y-2">
+                <a href="#" class="flex items-center px-4 py-3 bg-blue-600/10 text-blue-400 rounded-xl border border-blue-500/20 font-medium">
+                    <i class="fa-solid fa-layer-group w-6"></i> Dashboard
                 </a>
-                <a href="#" class="flex items-center px-4 py-3 hover:bg-slate-700 rounded-lg transition-colors text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-folder-open w-6"></i>
-                    <span>Case Repository</span>
+                <a href="{% url 'chat' %}" class="flex items-center px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                    <i class="fa-solid fa-robot w-6"></i> AI Assistant
+                </a>
+                <a href="{% url 'my_cases' %}" class="flex items-center px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                    <i class="fa-solid fa-file-contract w-6"></i> My Cases
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                    <i class="fa-solid fa-scale-balanced w-6"></i> Predictions
                 </a>
             </nav>
         </div>
-        <div class="p-4 border-t border-slate-700">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center text-white">
-                    <i class="fa-solid fa-user-tie"></i>
+
+        <div class="p-4 border-t border-white/5">
+            <div class="flex items-center gap-3 px-2 mb-4">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                    {{ user_name|slice:":1" }}
                 </div>
-                <div>
-                    <p class="text-sm font-medium">Hon. Justice</p>
-                    <p class="text-xs text-gray-500">Session ID: #892</p>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-white truncate">{{ user_name }}</p>
+                    <p class="text-xs text-slate-500 truncate">Client Account</p>
                 </div>
             </div>
+            <a href="{% url 'logout' %}" class="flex items-center justify-center w-full py-2.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/10">
+                <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Sign Out
+            </a>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full overflow-hidden">
+    <main class="flex-1 overflow-y-auto p-6 lg:p-10 relative z-10">
         
-        <header class="h-16 bg-slate-850 border-b border-slate-700 flex items-center justify-between px-8">
-            <div class="flex items-center gap-4">
-                <span class="px-3 py-1 bg-slate-700/50 border border-slate-600 rounded text-xs text-blue-400 font-mono">CASE #2024-CR-892</span>
-                <h1 class="text-xl font-semibold text-white">State vs. Doe <span class="text-gray-500 text-sm font-normal ml-2">| Evidence Review Phase</span></h1>
+        <header class="flex justify-between items-end mb-10">
+            <div>
+                <h1 class="text-3xl font-bold text-white mb-2">Welcome back, {{ user_name }}</h1>
+                <p class="text-slate-400">Here is an overview of your legal case submissions and AI insights.</p>
             </div>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 text-xs text-gray-400 mr-4">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    AI Online
-                </div>
-            </div>
+            <a href="#" class="hidden sm:flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-blue-900/20">
+                <i class="fa-solid fa-plus"></i> New Case Analysis
+            </a>
         </header>
 
-        <div class="flex-1 overflow-hidden p-6 grid grid-cols-12 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-blue-500/10 rounded-lg text-blue-400"><i class="fa-solid fa-folder-open text-xl"></i></div>
+                    <span class="text-xs text-slate-500 bg-white/5 px-2 py-1 rounded">All Time</span>
+                </div>
+                <div class="text-3xl font-bold text-white mb-1">{{ total_cases }}</div>
+                <p class="text-sm text-slate-400">Total Cases Submitted</p>
+            </div>
 
-            <div class="col-span-12 lg:col-span-7 flex flex-col gap-6 overflow-y-auto pr-2">
-                
-                <div class="bg-slate-850 rounded-xl border border-slate-700 p-1 shadow-lg flex-1 min-h-[400px] flex flex-col">
-                    <div class="flex justify-between items-center p-3 border-b border-slate-700/50">
-                        <h2 class="font-semibold text-sm text-gray-300"><i class="fa-solid fa-eye text-blue-500 mr-2"></i>Visual Evidence #04A</h2>
-                        <div class="flex gap-2">
-                            <button class="text-xs bg-blue-600 text-white px-2 py-1 rounded">AI Overlay</button>
-                            <button class="text-xs hover:bg-slate-700 text-gray-400 px-2 py-1 rounded">Raw</button>
-                        </div>
-                    </div>
-                    
-                    <div class="relative flex-1 bg-black rounded-lg m-1 overflow-hidden group">
-                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop" class="opacity-70 object-cover w-full h-full">
-                        
-                        <div class="absolute top-[20%] left-[25%] w-[15%] h-[20%] border-2 border-rose-500 bg-rose-500/10 shadow-[0_0_15px_rgba(244,63,94,0.5)]">
-                            <div class="absolute -top-6 left-0 bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-t">
-                                Weapon (98%)
-                            </div>
-                        </div>
-                    </div>
+            <div class="glass-card p-6 rounded-2xl">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-emerald-500/10 rounded-lg text-emerald-400"><i class="fa-solid fa-gavel text-xl"></i></div>
+                    <span class="text-xs text-slate-500 bg-white/5 px-2 py-1 rounded">Completed</span>
+                </div>
+                <div class="text-3xl font-bold text-white mb-1">{{ total_cases|add:"-1" }}</div> <p class="text-sm text-slate-400">Judgments Predicted</p>
+            </div>
+
+            <div class="glass-card p-6 rounded-2xl relative overflow-hidden group cursor-pointer" onclick="window.location.href='{% url 'chat' %}'">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-indigo-500/10 rounded-lg text-indigo-400"><i class="fa-solid fa-robot text-xl"></i></div>
+                    <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-white transition-colors"></i>
+                </div>
+                <div class="text-xl font-bold text-white mb-1">Ask AI Assistant</div>
+                <p class="text-sm text-slate-400">Get instant legal answers</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 glass-panel rounded-2xl overflow-hidden p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-white">Recent Case Submissions</h3>
+                    <a href="#" class="text-xs text-blue-400 hover:text-blue-300">View All</a>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 h-32">
-                    <div class="bg-slate-850 p-4 rounded-xl border border-slate-700 flex flex-col justify-center">
-                        <span class="text-gray-400 text-xs uppercase mb-1">Deepfake Analysis</span>
-                        <div class="flex items-end gap-2">
-                            <span class="text-2xl font-bold text-emerald-400">Authentic</span>
-                            <span class="text-sm text-gray-500 mb-1">99.2% Score</span>
-                        </div>
-                        <div class="w-full bg-slate-700 h-1.5 rounded-full mt-3">
-                            <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 99%"></div>
-                        </div>
-                    </div>
-                    <div class="bg-slate-850 p-4 rounded-xl border border-slate-700 flex flex-col justify-center">
-                        <span class="text-gray-400 text-xs uppercase mb-1">Identified Subject</span>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
-                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <p class="font-bold text-white">John Doe</p>
-                                <p class="text-xs text-blue-400">92% Face Match</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-slate-500 uppercase bg-white/5">
+                            <tr>
+                                <th class="px-4 py-3 rounded-l-lg">Case Title</th>
+                                <th class="px-4 py-3">Date</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3 rounded-r-lg text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for case in recent_cases %}
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="px-4 py-4 font-medium text-slate-200">{{ case.title|default:"Untitled Case" }}</td>
+                                <td class="px-4 py-4 text-slate-500">{{ case.created_at|date:"M d, Y" }}</td>
+                                <td class="px-4 py-4">
+                                    {% if case.status == 'Pending' %}
+                                    <span class="px-2 py-1 bg-yellow-500/10 text-yellow-500 rounded text-xs font-semibold">Pending</span>
+                                    {% else %}
+                                    <span class="px-2 py-1 bg-emerald-500/10 text-emerald-500 rounded text-xs font-semibold">Analyzed</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-4 text-right">
+                                    <button class="text-slate-400 hover:text-white"><i class="fa-solid fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="px-4 py-8 text-center text-slate-500 italic">No cases submitted yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="col-span-12 lg:col-span-5 flex flex-col bg-slate-850 rounded-xl border border-slate-700 shadow-xl overflow-hidden">
-                
-                <div class="p-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
-                    <div>
-                        <h3 class="font-semibold text-white"><i class="fa-solid fa-robot text-blue-500 mr-2"></i>Judex Assistant</h3>
-                        <p class="text-xs text-gray-400">Context: Analyzing Evidence #04A</p>
+            <div class="glass-panel rounded-2xl p-6">
+                <h3 class="text-lg font-semibold text-white mb-6">Recent AI Chats</h3>
+                <div class="space-y-4">
+                    {% for session in recent_chats %}
+                    <a href="{% url 'chat' %}?session={{ session.id }}" class="block p-4 rounded-xl bg-surface-800 hover:bg-surface-800/80 border border-white/5 hover:border-blue-500/30 transition-all group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-message text-blue-500"></i>
+                            <span class="text-sm font-medium text-slate-200 truncate">{{ session.title|default:"New Conversation" }}</span>
+                        </div>
+                        <div class="text-xs text-slate-500 flex justify-between">
+                            <span>{{ session.updated_at|timesince }} ago</span>
+                            <span class="group-hover:translate-x-1 transition-transform text-blue-400">Open &rarr;</span>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="text-center py-8 text-slate-500 text-sm">
+                        <i class="fa-regular fa-comments text-2xl mb-2 opacity-50"></i>
+                        <p>No chat history.</p>
+                        <a href="{% url 'chat' %}" class="text-blue-400 text-xs hover:underline mt-2 inline-block">Start a chat</a>
                     </div>
-                    <button class="text-gray-500 hover:text-white"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    {% endfor %}
                 </div>
-
-                <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 chat-scroll bg-slate-900/50">
-                    
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-gavel text-xs text-white"></i>
-                        </div>
-                        <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%]">
-                            <p class="text-sm text-gray-300">I have analyzed the submitted image. I detected a firearm in the upper quadrant (Confidence: 98%). Would you like me to cross-reference this with the registered weapon database?</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-3 flex-row-reverse">
-                        <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-user text-xs"></i>
-                        </div>
-                        <div class="bg-blue-900/30 p-3 rounded-2xl rounded-tr-none border border-blue-800/50 max-w-[85%]">
-                            <p class="text-sm text-blue-100">Yes, check if the serial number is visible.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-gavel text-xs text-white"></i>
-                        </div>
-                        <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%]">
-                            <p class="text-sm text-gray-300">Negative. The resolution is insufficient to read the serial number directly. However, I have enhanced the frame. <br><br> <span class="text-emerald-400 cursor-pointer hover:underline"><i class="fa-solid fa-image mr-1"></i> View Enhanced Frame</span></p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="p-4 bg-slate-850 border-t border-slate-700">
-                    <form id="chat-form" class="relative">
-                        <input type="text" id="user-input" 
-                            class="w-full bg-slate-900 border border-slate-700 text-gray-200 text-sm rounded-lg pl-4 pr-12 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-500" 
-                            placeholder="Ask about the evidence or relevant laws..." autocomplete="off">
-                        <button type="submit" class="absolute right-2 top-2 p-1.5 text-blue-500 hover:text-blue-400 transition-colors">
-                            <i class="fa-solid fa-paper-plane text-lg"></i>
-                        </button>
-                    </form>
-                    <div class="flex justify-center mt-2 gap-2">
-                        <button class="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded-full text-gray-400 border border-slate-700">Find Precedents</button>
-                        <button class="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded-full text-gray-400 border border-slate-700">Draft Ruling</button>
-                    </div>
-                </div>
-
             </div>
+
         </div>
     </main>
 
-    <script>
-        const chatForm = document.getElementById('chat-form');
-        const chatContainer = document.getElementById('chat-container');
-        const userInput = document.getElementById('user-input');
-
-        chatForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const text = userInput.value.trim();
-            if (!text) return;
-
-            // 1. Add User Message
-            appendMessage('user', text);
-            userInput.value = '';
-
-            // 2. Simulate AI Typing Delay
-            setTimeout(() => {
-                // Simple logic for demo purposes
-                let response = "I'm analyzing that query against the current case files...";
-                if(text.toLowerCase().includes("law") || text.toLowerCase().includes("statute")) {
-                    response = "Based on Penal Code 187, this evidence supports the prosecution's claim of intent.";
-                } else if (text.toLowerCase().includes("zoom") || text.toLowerCase().includes("enhance")) {
-                    response = "Applying 4x super-resolution upscaling to the requested region. One moment.";
-                }
-                
-                appendMessage('ai', response);
-            }, 1000);
-        });
-
-        function appendMessage(role, text) {
-            const div = document.createElement('div');
-            div.className = role === 'user' ? "flex items-start gap-3 flex-row-reverse" : "flex items-start gap-3";
-            
-            const iconColor = role === 'user' ? "bg-slate-600" : "bg-blue-600";
-            const iconClass = role === 'user' ? "fa-user" : "fa-gavel";
-            const bubbleClass = role === 'user' ? "bg-blue-900/30 border-blue-800/50 text-blue-100 rounded-tr-none" : "bg-slate-800 border-slate-700 text-gray-300 rounded-tl-none";
-
-            div.innerHTML = `
-                <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid ${iconClass} text-xs text-white"></i>
-                </div>
-                <div class="${bubbleClass} p-3 rounded-2xl border max-w-[85%] animate-[fadeIn_0.3s_ease-out]">
-                    <p class="text-sm">${text}</p>
-                </div>
-            `;
-            
-            chatContainer.appendChild(div);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-    </script>
 </body>
 </html>

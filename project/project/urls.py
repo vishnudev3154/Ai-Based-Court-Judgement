@@ -1,22 +1,19 @@
+from django.contrib import admin
 from django.urls import path
 from app import views
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path("", views.home, name="home"),
-
-    # Public user
     path("register/", views.register_view, name="register"),
-    path("userpage/", views.user_dashboard, name="userpage"),
-
-    # Admin only
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
-    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
-    path("admin/users/", views.manage_users, name="manage_users"),
-    path("admin/users/toggle/<int:user_id>/", views.toggle_user_status, name="toggle_user"),
-    path("admin/cases/", views.manage_cases, name="manage_cases"),
-    path("admin/cases/review/<int:case_id>/", views.review_case, name="review_case"),
-    path("admin/cases/flag/<int:case_id>/", views.flag_case, name="flag_case"),
+    path("userpage/", views.user_dashboard, name="userpage"),
 
-
+    # ✅ Gemini AI API
+    # path("api/chat/", views.ai_chat, name="api_chat"),
+    path('chat/', views.chat_view, name='chat'),
+    path('chat/history/<int:session_id>/', views.get_chat_history, name='get_chat_history'),
+    path('my-cases/', views.my_cases_view, name='my_cases'),
+    path('create-case/', views.create_case_view, name='create_case'),
 ]
